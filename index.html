@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA GESTÃO SED SC - EDITÁVEL</title>
+    <title>SISTEMA GESTÃO SED SC</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -12,28 +12,47 @@
     <style>
         :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; --azul-edit: #2980b9; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
+        
+        /* Login */
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 350px; border-top: 8px solid var(--vermelho-sc); }
+        
         #container-principal { display: none; padding: 20px; }
+        
+        /* Topo */
         .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Dashboard */
         .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; border-bottom: 4px solid #ccc; }
         .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
+
+        /* Formulário */
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
+        
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
         .btn-salvar { background: var(--verde-sed); color: white; width: 100%; height: 42px; align-self: end; }
         .btn-editar { background: #f39c12; color: white; padding: 5px 10px; }
+        
+        /* Tabela */
         .table-wrap { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
+        th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; position: sticky; top: 0; }
         td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #eee; }
+        
+        /* Estilos de Status */
         .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; }
         .status-atendendo { background: #fff3cd; color: #856404; }
         .status-encerrado { background: #d4edda; color: #155724; }
+        .status-instalação { background: #cfe2ff; color: #084298; }
+        .status-troca { background: #e2d9f3; color: #512da8; }
+        .status-retirada { background: #f8d7da; color: #842029; }
+        .status-mudança { background: #e2e3e5; color: #41464b; }
     </style>
 </head>
 <body>
@@ -41,6 +60,7 @@
     <div id="tela-login">
         <div class="login-box">
             <h2 style="color: var(--verde-sed);">SISTEMA SED SC</h2>
+            <p style="font-size: 12px; color: #666;">Controle de Chamados de Impressoras</p>
             <input type="text" id="user-login" placeholder="Nome do Operador">
             <br><br>
             <button class="btn btn-salvar" onclick="fazerLogin()">ACESSAR PAINEL</button>
@@ -49,9 +69,9 @@
 
     <div id="container-principal">
         <div class="header-main">
-            <h1>Gestão de Impressoras</h1>
+            <h1>Gestão de Equipamentos</h1>
             <div>
-                <span id="nome-usuario-logado" style="margin-right:15px;"></span>
+                <span id="nome-usuario-logado" style="margin-right:15px; font-weight:bold;"></span>
                 <button class="btn" style="background:#e74c3c; color:white;" onclick="exportarPDF()">PDF</button>
                 <button class="btn" style="background:#27ae60; color:white;" onclick="exportarExcel()">Excel</button>
                 <button class="btn" style="background:#333; color:white;" onclick="location.reload()">Sair</button>
@@ -72,7 +92,7 @@
                 <div><label>MUNICÍPIO</label><input type="text" id="municipio"></div>
                 <div><label>CRE</label><input type="text" id="cre"></div>
                 <div><label>TPSC</label><input type="text" id="tpsc"></div>
-                <div><label>IMP</label><input type="text" id="chamado"></div>
+                <div><label>IMP (Patrimônio)</label><input type="text" id="chamado"></div>
                 <div>
                     <label>STATUS</label>
                     <select id="status">
@@ -80,13 +100,15 @@
                         <option>Encerrado</option>
                         <option>Instalação</option>
                         <option>Troca de Equipamento</option>
+                        <option>Retirada de Equipamento</option>
+                        <option>Mudança de Local</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 5px; align-items: flex-end;">
                     <button class="btn btn-salvar" id="btnSalvar" onclick="salvarRegistro()">SALVAR REGISTRO</button>
                     <button class="btn" id="btnCancelar" style="display:none; background:#95a5a6; color:white;" onclick="cancelarEdicao()">X</button>
                 </div>
-                <div class="span-4"><label>OBSERVAÇÕES / DEFEITO</label><textarea id="defeito" rows="2"></textarea></div>
+                <div class="span-4"><label>OBSERVAÇÕES / DETALHES</label><textarea id="defeito" rows="2"></textarea></div>
             </div>
         </div>
 
@@ -94,7 +116,16 @@
             <table>
                 <thead>
                     <tr>
-                        <th>AÇÃO</th><th>DATA</th><th>UNIDADE</th><th>MUNICÍPIO</th><th>CRE</th><th>TPSC</th><th>IMP</th><th>STATUS</th><th>OBS</th><th>OPERADOR</th>
+                        <th>AÇÃO</th>
+                        <th>DATA</th>
+                        <th>UNIDADE</th>
+                        <th>MUNICÍPIO</th>
+                        <th>CRE</th>
+                        <th>TPSC</th>
+                        <th>IMP</th>
+                        <th>STATUS</th>
+                        <th>OBSERVAÇÕES</th>
+                        <th>OPERADOR</th>
                     </tr>
                 </thead>
                 <tbody id="corpoTabela"></tbody>
@@ -110,8 +141,8 @@
 
         function fazerLogin() {
             usuarioLogado = document.getElementById('user-login').value;
-            if(!usuarioLogado) return alert("Informe seu nome.");
-            document.getElementById('nome-usuario-logado').innerText = "Operador: " + usuarioLogado;
+            if(!usuarioLogado) return alert("Por favor, informe seu nome.");
+            document.getElementById('nome-usuario-logado').innerText = usuarioLogado;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('container-principal').style.display = 'block';
             carregarTabela();
@@ -140,15 +171,15 @@
                 usuario_reg: usuarioLogado
             };
 
-            if(!dados.unidade) return alert("Unidade é obrigatória.");
+            if(!dados.unidade) return alert("O campo Unidade é obrigatório.");
             btn.disabled = true; btn.innerText = "Processando...";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
-                alert(idEditando ? "Atualizado com sucesso!" : "Salvo com sucesso!");
+                alert(idEditando ? "Registro atualizado!" : "Registro salvo!");
                 cancelarEdicao();
                 carregarTabela();
-            } catch (e) { alert("Erro de conexão."); }
+            } catch (e) { alert("Erro ao conectar ao banco de dados."); }
             finally { btn.disabled = false; }
         }
 
@@ -180,7 +211,8 @@
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando com Google Sheets...</td></tr>";
+            
             try {
                 const res = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
                 const dados = await res.json();
@@ -190,10 +222,12 @@
 
                 dados.reverse().forEach(v => {
                     s.t++;
-                    const st = (v.status || '').toLowerCase();
-                    if(st.includes('atendendo')) s.a++;
-                    else if(st.includes('encerrado')) s.e++;
-                    else if(st.includes('instalação')) s.i++;
+                    const stRaw = (v.status || '').toLowerCase();
+                    const stClass = stRaw.split(' ')[0]; // pega a primeira palavra para a cor
+                    
+                    if(stRaw.includes('atendendo')) s.a++;
+                    else if(stRaw.includes('encerrado')) s.e++;
+                    else if(stRaw.includes('instalação')) s.i++;
                     else s.o++;
 
                     corpo.innerHTML += `
@@ -205,35 +239,38 @@
                             <td>${v.cre || '-'}</td>
                             <td>${v.tpsc || '-'}</td>
                             <td>${v.chamado || v.imp || '-'}</td>
-                            <td><span class="badge status-${st.split(' ')[0]}">${v.status || '-'}</span></td>
+                            <td><span class="badge status-${stClass}">${v.status || '-'}</span></td>
                             <td>${v.defeito || v.obs || '-'}</td>
                             <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
                         </tr>`;
                 });
+
                 document.getElementById('stat-total').innerText = s.t;
                 document.getElementById('stat-aberto').innerText = s.a;
                 document.getElementById('stat-ok').innerText = s.e;
                 document.getElementById('stat-inst').innerText = s.i;
                 document.getElementById('stat-outros').innerText = s.o;
-            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red'>Erro ao carregar dados.</td></tr>"; }
+
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red; text-align:center'>Erro ao carregar dados.</td></tr>"; }
         }
 
         function exportarExcel() {
             const ws = XLSX.utils.json_to_sheet(registrosLocal);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Dados");
-            XLSX.writeFile(wb, "Relatorio_SED_SC.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Chamados");
+            XLSX.writeFile(wb, "Relatorio_Impressoras_SED.xlsx");
         }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
-            doc.text("Relatório SED SC", 10, 10);
+            doc.text("Relatório Geral de Manutenções - SED SC", 10, 10);
             doc.autoTable({
-                head: [['Data', 'Unidade', 'Status', 'Obs']],
-                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs])
+                head: [['Data', 'Unidade', 'Status', 'Observações']],
+                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs]),
+                startY: 20
             });
-            doc.save("Relatorio.pdf");
+            doc.save("Relatorio_Chamados.pdf");
         }
     </script>
 </body>
