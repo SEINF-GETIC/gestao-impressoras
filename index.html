@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA GESTÃO SED SC</title>
+    <title>SISTEMA GESTÃO SED SC v4.0</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -12,40 +12,26 @@
     <style>
         :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; --azul-edit: #2980b9; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
-        
-        /* Login */
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 350px; border-top: 8px solid var(--vermelho-sc); }
-        
         #container-principal { display: none; padding: 20px; }
-        
-        /* Topo */
         .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Dashboard */
         .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; border-bottom: 4px solid #ccc; }
         .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
-
-        /* Formulário */
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
-        
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
-        
         .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
         .btn-salvar { background: var(--verde-sed); color: white; width: 100%; height: 42px; align-self: end; }
         .btn-editar { background: #f39c12; color: white; padding: 5px 10px; }
-        
-        /* Tabela */
         .table-wrap { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; position: sticky; top: 0; }
         td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #eee; }
         
-        /* Estilos de Status */
         .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; }
         .status-atendendo { background: #fff3cd; color: #856404; }
         .status-encerrado { background: #d4edda; color: #155724; }
@@ -53,14 +39,18 @@
         .status-troca { background: #e2d9f3; color: #512da8; }
         .status-retirada { background: #f8d7da; color: #842029; }
         .status-mudança { background: #e2e3e5; color: #41464b; }
+
+        /* Barra de Pesquisa */
+        .search-container { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
+        #inputPesquisa { flex: 1; padding: 12px; border: 2px solid var(--verde-sed); border-radius: 8px; font-size: 14px; outline: none; }
+        #inputPesquisa:focus { box-shadow: 0 0 8px rgba(0, 100, 55, 0.2); }
     </style>
 </head>
 <body>
-
     <div id="tela-login">
         <div class="login-box">
             <h2 style="color: var(--verde-sed);">SISTEMA SED SC</h2>
-            <p style="font-size: 12px; color: #666;">Controle de Chamados de Impressoras</p>
+            <p style="font-size: 12px; color: #666;">Controle de Chamados v4.0</p>
             <input type="text" id="user-login" placeholder="Nome do Operador">
             <br><br>
             <button class="btn btn-salvar" onclick="fazerLogin()">ACESSAR PAINEL</button>
@@ -69,7 +59,7 @@
 
     <div id="container-principal">
         <div class="header-main">
-            <h1>Gestão de Chamados Impressoras SED SC</h1>
+            <h1>Gestão de Equipamentos</h1>
             <div>
                 <span id="nome-usuario-logado" style="margin-right:15px; font-weight:bold;"></span>
                 <button class="btn" style="background:#e74c3c; color:white;" onclick="exportarPDF()">PDF</button>
@@ -112,8 +102,12 @@
             </div>
         </div>
 
+        <div class="search-container">
+            <input type="text" id="inputPesquisa" placeholder="🔍 Pesquisar por Escola, Município, Status ou IMP..." onkeyup="filtrarTabela()">
+        </div>
+
         <div class="table-wrap">
-            <table>
+            <table id="tabelaDados">
                 <thead>
                     <tr>
                         <th>AÇÃO</th>
@@ -211,68 +205,77 @@
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando com Google Sheets...</td></tr>";
-            
+            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando...</td></tr>";
             try {
                 const res = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
                 const dados = await res.json();
                 registrosLocal = dados;
-                corpo.innerHTML = "";
-                let s = { t:0, a:0, e:0, i:0, o:0 };
+                renderizarLinhas(dados);
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red'>Erro ao carregar dados.</td></tr>"; }
+        }
 
-                dados.reverse().forEach(v => {
-                    s.t++;
-                    const stRaw = (v.status || '').toLowerCase();
-                    const stClass = stRaw.split(' ')[0]; // pega a primeira palavra para a cor
-                    
-                    if(stRaw.includes('atendendo')) s.a++;
-                    else if(stRaw.includes('encerrado')) s.e++;
-                    else if(stRaw.includes('instalação')) s.i++;
-                    else s.o++;
+        function renderizarLinhas(lista) {
+            const corpo = document.getElementById('corpoTabela');
+            corpo.innerHTML = "";
+            let s = { t:0, a:0, e:0, i:0, o:0 };
 
-                    corpo.innerHTML += `
-                        <tr>
-                            <td><button class="btn btn-editar" onclick="prepararEdicao(${v.id})">Editar</button></td>
-                            <td>${formatarData(v.data)}</td>
-                            <td><b>${v.unidade || '-'}</b></td>
-                            <td>${v.municipio || v.município || '-'}</td>
-                            <td>${v.cre || '-'}</td>
-                            <td>${v.tpsc || '-'}</td>
-                            <td>${v.chamado || v.imp || '-'}</td>
-                            <td><span class="badge status-${stClass}">${v.status || '-'}</span></td>
-                            <td>${v.defeito || v.obs || '-'}</td>
-                            <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
-                        </tr>`;
-                });
+            lista.slice().reverse().forEach(v => {
+                s.t++;
+                const stRaw = (v.status || '').toLowerCase();
+                const stClass = stRaw.split(' ')[0]; 
+                
+                if(stRaw.includes('atendendo')) s.a++;
+                else if(stRaw.includes('encerrado')) s.e++;
+                else if(stRaw.includes('instalação')) s.i++;
+                else s.o++;
 
-                document.getElementById('stat-total').innerText = s.t;
-                document.getElementById('stat-aberto').innerText = s.a;
-                document.getElementById('stat-ok').innerText = s.e;
-                document.getElementById('stat-inst').innerText = s.i;
-                document.getElementById('stat-outros').innerText = s.o;
+                corpo.innerHTML += `
+                    <tr>
+                        <td><button class="btn btn-editar" onclick="prepararEdicao(${v.id})">Editar</button></td>
+                        <td>${formatarData(v.data)}</td>
+                        <td><b>${v.unidade || '-'}</b></td>
+                        <td>${v.municipio || v.município || '-'}</td>
+                        <td>${v.cre || '-'}</td>
+                        <td>${v.tpsc || '-'}</td>
+                        <td>${v.chamado || v.imp || '-'}</td>
+                        <td><span class="badge status-${stClass}">${v.status || '-'}</span></td>
+                        <td>${v.defeito || v.obs || '-'}</td>
+                        <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
+                    </tr>`;
+            });
 
-            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red; text-align:center'>Erro ao carregar dados.</td></tr>"; }
+            document.getElementById('stat-total').innerText = s.t;
+            document.getElementById('stat-aberto').innerText = s.a;
+            document.getElementById('stat-ok').innerText = s.e;
+            document.getElementById('stat-inst').innerText = s.i;
+            document.getElementById('stat-outros').innerText = s.o;
+        }
+
+        function filtrarTabela() {
+            const termo = document.getElementById('inputPesquisa').value.toLowerCase();
+            const filtrados = registrosLocal.filter(r => {
+                return Object.values(r).some(v => String(v).toLowerCase().includes(termo));
+            });
+            renderizarLinhas(filtrados);
         }
 
         function exportarExcel() {
             const ws = XLSX.utils.json_to_sheet(registrosLocal);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Chamados");
-            XLSX.writeFile(wb, "Relatorio_Impressoras_SED.xlsx");
+            XLSX.writeFile(wb, "Relatorio_SED.xlsx");
         }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
-            doc.text("Relatório Geral de Manutenções - SED SC", 10, 10);
+            doc.text("Relatório Geral SED SC", 10, 10);
             doc.autoTable({
-                head: [['Data', 'Unidade', 'Status', 'Observações']],
-                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs]),
-                startY: 20
+                head: [['Data', 'Unidade', 'Status', 'Obs']],
+                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs])
             });
-            doc.save("Relatorio_Chamados.pdf");
+            doc.save("Relatorio.pdf");
         }
     </script>
 </body>
 </html>
-
