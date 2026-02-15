@@ -12,40 +12,29 @@
     <style>
         :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --azul-inst: #007bff; --vermelho-sc: #dc3545; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
-        
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 380px; border-top: 8px solid var(--vermelho-sc); }
-        
         #container-principal { display: none; padding: 20px; }
-        
         .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-titulo h1 { margin: 0; font-size: 16px; color: var(--verde-sed); text-transform: uppercase; }
-        
         .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #ccc; }
         .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
-        
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
-        
         .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 12px; }
         .btn-salvar { background: var(--verde-sed); color: white; height: 42px; align-self: end; }
-        .btn-salvar:disabled { background: #ccc; cursor: not-allowed; }
-        
         .table-wrap { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid #eee; background: white; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 5; text-align: left; }
         td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #eee; }
-        
         .badge-status { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; }
-        .status-Atendendo { background: #fff3cd; color: #856404; }
-        .status-Encerrado { background: #d4edda; color: #155724; }
-        .status-Instalação { background: #cfe2ff; color: #084298; }
-        .status-Troca, .status-Mudança, .status-Retirada { background: #f8d7da; color: #721c24; }
+        .status-atendendo { background: #fff3cd; color: #856404; }
+        .status-encerrado { background: #d4edda; color: #155724; }
+        .status-instalação { background: #cfe2ff; color: #084298; }
     </style>
 </head>
 <body>
@@ -79,7 +68,7 @@
             <div class="stat-card"><small>Outros</small><b id="stat-mov">0</b></div>
         </div>
 
-        <div class="card card-registro">
+        <div class="card">
             <div class="form-grid">
                 <div class="form-group span-2"><label>UNIDADE ESCOLAR</label><input type="text" id="unidade"></div>
                 <div class="form-group"><label>MUNICÍPIO</label><input type="text" id="municipio"></div>
@@ -107,15 +96,7 @@
                 <table id="tabela-dados">
                     <thead>
                         <tr>
-                            <th>Data</th>
-                            <th>Unidade</th>
-                            <th>Município</th>
-                            <th>CRE</th>
-                            <th>TPSC</th>
-                            <th>IMP</th>
-                            <th>Status</th>
-                            <th>Obs</th>
-                            <th>Operador</th>
+                            <th>Data</th><th>Unidade</th><th>Município</th><th>CRE</th><th>TPSC</th><th>IMP</th><th>Status</th><th>Obs</th><th>Operador</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela"></tbody>
@@ -125,7 +106,7 @@
     </div>
 
     <script>
-        // URL ATUALIZADA DO SEU SCRIPT
+        // URL DO SEU APP DA WEB (CONFORME SUA IMAGEM)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJsIvdBu6EDwRF-PMOYNkBpYfnCXIInwGhJKq7F7Te0yj3ZiOHVq7NfhIr6tmQS5zw0Q/exec";
         
         let usuarioLogado = "";
@@ -133,7 +114,7 @@
 
         function fazerLogin() {
             usuarioLogado = document.getElementById('user-login').value;
-            if(!usuarioLogado) return alert("Por favor, informe seu nome.");
+            if(!usuarioLogado) return alert("Informe seu nome.");
             document.getElementById('nome-usuario-logado').innerText = usuarioLogado;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('container-principal').style.display = 'block';
@@ -153,53 +134,34 @@
                 defeito: document.getElementById('defeito').value,
                 usuario_reg: usuarioLogado
             };
-
-            if(!dados.unidade) return alert("O campo UNIDADE ESCOLAR é obrigatório.");
-
-            btn.disabled = true;
-            btn.innerText = "ENVIANDO...";
+            if(!dados.unidade) return alert("Unidade obrigatória!");
+            btn.disabled = true; btn.innerText = "ENVIANDO...";
 
             try {
-                // Envio via POST para o Google Apps Script
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    cache: 'no-cache',
-                    body: JSON.stringify(dados)
-                });
-
-                alert("Registro enviado com sucesso!");
-                // Limpa campos
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
+                alert("Salvo com sucesso!");
                 ['unidade', 'municipio', 'cre', 'tpsc', 'chamado', 'defeito'].forEach(id => document.getElementById(id).value = "");
                 carregarTabela();
-            } catch (e) {
-                alert("Erro ao salvar dados. Verifique sua conexão.");
-                console.error(e);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "SALVAR REGISTRO";
-            }
+            } catch (e) { alert("Erro ao salvar."); }
+            finally { btn.disabled = false; btn.innerText = "SALVAR REGISTRO"; }
         }
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Buscando dados na nuvem...</td></tr>";
-
+            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Carregando nuvem...</td></tr>";
             try {
                 const response = await fetch(SCRIPT_URL);
                 const dados = await response.json();
-                
                 registrosParaExportar = dados;
                 corpo.innerHTML = "";
                 
                 let stats = { total: 0, atendendo: 0, ok: 0, inst: 0, outros: 0 };
-
-                // Inverte para mostrar o mais recente primeiro
                 dados.reverse().forEach(v => {
                     stats.total++;
-                    if(v.status === 'Atendendo') stats.atendendo++;
-                    else if(v.status === 'Encerrado') stats.ok++;
-                    else if(v.status === 'Instalação') stats.inst++;
+                    const st = (v.status || '').toLowerCase();
+                    if(st.includes('atendendo')) stats.atendendo++;
+                    else if(st.includes('encerrado')) stats.ok++;
+                    else if(st.includes('instalação')) stats.inst++;
                     else stats.outros++;
 
                     corpo.innerHTML += `
@@ -209,47 +171,22 @@
                             <td>${v.municipio || '-'}</td>
                             <td>${v.cre || '-'}</td>
                             <td>${v.tpsc || '-'}</td>
-                            <td>${v.imp || v.chamado || '-'}</td>
-                            <td><span class="badge-status status-${(v.status || '').split(' ')[0]}">${v.status || '-'}</span></td>
-                            <td>${v.obs || v.defeito || '-'}</td>
-                            <td><small>${v.operador || v.usuario_reg || '-'}</small></td>
+                            <td>${v.chamado || v.imp || '-'}</td>
+                            <td><span class="badge-status status-${st.split(' ')[0]}">${v.status || '-'}</span></td>
+                            <td>${v.defeito || v.obs || '-'}</td>
+                            <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
                         </tr>`;
                 });
-
-                // Atualiza Dashboard
                 document.getElementById('stat-total').innerText = stats.total;
                 document.getElementById('stat-aberto').innerText = stats.atendendo;
                 document.getElementById('stat-ok').innerText = stats.ok;
                 document.getElementById('stat-inst').innerText = stats.inst;
                 document.getElementById('stat-mov').innerText = stats.outros;
-
-            } catch (e) {
-                corpo.innerHTML = "<tr><td colspan='9' style='color:red; text-align:center'>Erro ao carregar dados. Verifique as permissões da Planilha/Script.</td></tr>";
-                console.error(e);
-            }
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='9' style='color:red'>Erro ao carregar dados. Verifique se o Script está em 'Qualquer Pessoa'.</td></tr>"; }
         }
 
-        function exportarExcel() {
-            if(registrosParaExportar.length === 0) return alert("Sem dados para exportar.");
-            const ws = XLSX.utils.json_to_sheet(registrosParaExportar);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Chamados");
-            XLSX.writeFile(wb, "Relatorio_SED_SC.xlsx");
-        }
-
-        function exportarPDF() {
-            if(registrosParaExportar.length === 0) return alert("Sem dados.");
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
-            doc.setFontSize(16);
-            doc.text("Relatório de Chamados - SED SC", 15, 15);
-            
-            const head = [['Data', 'Unidade', 'Município', 'Status', 'Operador']];
-            const body = registrosParaExportar.map(v => [v.data, v.unidade, v.municipio, v.status, v.usuario_reg || v.operador]);
-            
-            doc.autoTable({ head, body, startY: 25, styles: { fontSize: 8 } });
-            doc.save("Relatorio_Impressoras.pdf");
-        }
+        function exportarExcel() { const ws = XLSX.utils.json_to_sheet(registrosParaExportar); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dados"); XLSX.writeFile(wb, "Relatorio.xlsx"); }
+        function exportarPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF('l'); doc.text("Relatório SED SC", 10, 10); doc.autoTable({ head: [['Data', 'Unidade', 'Status']], body: registrosParaExportar.map(v => [v.data, v.unidade, v.status]) }); doc.save("Relatorio.pdf"); }
     </script>
 </body>
 </html>
