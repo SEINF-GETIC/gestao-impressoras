@@ -3,57 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA GESTÃO SED SC</title>
+    <title>SISTEMA GESTÃO SED SC - EDITÁVEL</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
-        
+        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; --azul-edit: #2980b9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 350px; border-top: 8px solid var(--vermelho-sc); }
-        
         #container-principal { display: none; padding: 20px; }
-        
         .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header-titulo h1 { margin: 0; font-size: 16px; color: var(--verde-sed); text-transform: uppercase; }
-
         .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #ccc; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; border-bottom: 4px solid #ccc; }
         .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
-
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .span-2 { grid-column: span 2; }
-        .span-4 { grid-column: span 4; }
-
+        .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
-        
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 12px; }
-        .btn-salvar { background: var(--verde-sed); color: white; height: 42px; align-self: end; width: 100%; }
-        .btn-salvar:hover { background: var(--verde-escuro); }
-
-        .table-wrap { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid #eee; background: white; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-salvar { background: var(--verde-sed); color: white; width: 100%; height: 42px; align-self: end; }
+        .btn-editar { background: #f39c12; color: white; padding: 5px 10px; }
+        .table-wrap { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; border-bottom: 2px solid #ddd; position: sticky; top: 0; text-align: left; }
+        th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #eee; }
-        
         .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; }
         .status-atendendo { background: #fff3cd; color: #856404; }
         .status-encerrado { background: #d4edda; color: #155724; }
-        .status-instalação { background: #cfe2ff; color: #084298; }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
         <div class="login-box">
-            <h2 style="color: var(--verde-sed); margin-bottom: 5px;">SISTEMA SED SC</h2>
-            <p style="font-size: 12px; color: #666; margin-bottom: 25px;">Gestão de Impressoras - Cloud</p>
+            <h2 style="color: var(--verde-sed);">SISTEMA SED SC</h2>
             <input type="text" id="user-login" placeholder="Nome do Operador">
             <br><br>
             <button class="btn btn-salvar" onclick="fazerLogin()">ACESSAR PAINEL</button>
@@ -62,12 +49,12 @@
 
     <div id="container-principal">
         <div class="header-main">
-            <div class="header-titulo"><h1>Gerenciamento de Impressoras</h1></div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <span style="font-size: 12px;">Operador: <strong id="nome-usuario-logado"></strong></span>
-                <button class="btn" style="background: #e74c3c; color: white;" onclick="exportarPDF()">PDF</button>
-                <button class="btn" style="background: #27ae60; color: white;" onclick="exportarExcel()">Excel</button>
-                <button class="btn" style="background: #333; color: white;" onclick="location.reload()">Sair</button>
+            <h1>Gestão de Impressoras</h1>
+            <div>
+                <span id="nome-usuario-logado" style="margin-right:15px;"></span>
+                <button class="btn" style="background:#e74c3c; color:white;" onclick="exportarPDF()">PDF</button>
+                <button class="btn" style="background:#27ae60; color:white;" onclick="exportarExcel()">Excel</button>
+                <button class="btn" style="background:#333; color:white;" onclick="location.reload()">Sair</button>
             </div>
         </div>
 
@@ -85,7 +72,7 @@
                 <div><label>MUNICÍPIO</label><input type="text" id="municipio"></div>
                 <div><label>CRE</label><input type="text" id="cre"></div>
                 <div><label>TPSC</label><input type="text" id="tpsc"></div>
-                <div><label>IMP (Patrimônio)</label><input type="text" id="chamado"></div>
+                <div><label>IMP</label><input type="text" id="chamado"></div>
                 <div>
                     <label>STATUS</label>
                     <select id="status">
@@ -93,11 +80,11 @@
                         <option>Encerrado</option>
                         <option>Instalação</option>
                         <option>Troca de Equipamento</option>
-                        <option>Retirada</option>
                     </select>
                 </div>
-                <div style="display: flex; align-items: flex-end;">
+                <div style="display: flex; gap: 5px; align-items: flex-end;">
                     <button class="btn btn-salvar" id="btnSalvar" onclick="salvarRegistro()">SALVAR REGISTRO</button>
+                    <button class="btn" id="btnCancelar" style="display:none; background:#95a5a6; color:white;" onclick="cancelarEdicao()">X</button>
                 </div>
                 <div class="span-4"><label>OBSERVAÇÕES / DEFEITO</label><textarea id="defeito" rows="2"></textarea></div>
             </div>
@@ -107,15 +94,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>DATA</th>
-                        <th>UNIDADE</th>
-                        <th>MUNICÍPIO</th>
-                        <th>CRE</th>
-                        <th>TPSC</th>
-                        <th>IMP</th>
-                        <th>STATUS</th>
-                        <th>OBSERVAÇÕES</th>
-                        <th>OPERADOR</th>
+                        <th>AÇÃO</th><th>DATA</th><th>UNIDADE</th><th>MUNICÍPIO</th><th>CRE</th><th>TPSC</th><th>IMP</th><th>STATUS</th><th>OBS</th><th>OPERADOR</th>
                     </tr>
                 </thead>
                 <tbody id="corpoTabela"></tbody>
@@ -124,38 +103,33 @@
     </div>
 
     <script>
-        // URL DO SEU APP DA WEB (CONFORME SUA IMAGEM)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJsIvdBu6EDwRF-PMOYNkBpYfnCXIInwGhJKq7F7Te0yj3ZiOHVq7NfhIr6tmQS5zw0Q/exec";
-        
         let usuarioLogado = "";
         let registrosLocal = [];
+        let idEditando = null;
 
         function fazerLogin() {
             usuarioLogado = document.getElementById('user-login').value;
             if(!usuarioLogado) return alert("Informe seu nome.");
-            document.getElementById('nome-usuario-logado').innerText = usuarioLogado;
+            document.getElementById('nome-usuario-logado').innerText = "Operador: " + usuarioLogado;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('container-principal').style.display = 'block';
             carregarTabela();
         }
 
-        // Função para formatar a data ISO para PT-BR
         function formatarData(dataISO) {
             if (!dataISO || dataISO === '-') return '-';
             try {
-                const dataObj = new Date(dataISO);
-                if (isNaN(dataObj.getTime())) return dataISO;
-                return dataObj.toLocaleString('pt-BR', {
-                    day: '2-digit', month: '2-digit', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-            } catch (e) { return dataISO; }
+                const d = new Date(dataISO);
+                return isNaN(d.getTime()) ? dataISO : d.toLocaleString('pt-BR');
+            } catch(e) { return dataISO; }
         }
 
         async function salvarRegistro() {
             const btn = document.getElementById('btnSalvar');
             const dados = {
-                data: new Date().toISOString(), // Enviamos formato ISO para o Google tratar
+                id: idEditando,
+                data: idEditando ? undefined : new Date().toISOString(),
                 unidade: document.getElementById('unidade').value,
                 municipio: document.getElementById('municipio').value,
                 cre: document.getElementById('cre').value,
@@ -166,45 +140,65 @@
                 usuario_reg: usuarioLogado
             };
 
-            if(!dados.unidade) return alert("Campo Unidade é obrigatório!");
-            btn.disabled = true; btn.innerText = "Sincronizando...";
+            if(!dados.unidade) return alert("Unidade é obrigatória.");
+            btn.disabled = true; btn.innerText = "Processando...";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
-                alert("Registro salvo com sucesso!");
-                ['unidade','municipio','cre','tpsc','chamado','defeito'].forEach(id => document.getElementById(id).value = "");
+                alert(idEditando ? "Atualizado com sucesso!" : "Salvo com sucesso!");
+                cancelarEdicao();
                 carregarTabela();
-            } catch (e) { 
-                alert("Erro ao conectar com o servidor."); 
-            } finally { 
-                btn.disabled = false; btn.innerText = "SALVAR REGISTRO"; 
-            }
+            } catch (e) { alert("Erro de conexão."); }
+            finally { btn.disabled = false; }
+        }
+
+        function prepararEdicao(id) {
+            const r = registrosLocal.find(x => x.id == id);
+            if(!r) return;
+            idEditando = id;
+            document.getElementById('unidade').value = r.unidade || '';
+            document.getElementById('municipio').value = r.municipio || r.município || '';
+            document.getElementById('cre').value = r.cre || '';
+            document.getElementById('tpsc').value = r.tpsc || '';
+            document.getElementById('chamado').value = r.chamado || r.imp || '';
+            document.getElementById('status').value = r.status || 'Atendendo';
+            document.getElementById('defeito').value = r.defeito || r.obs || '';
+            
+            document.getElementById('btnSalvar').innerText = "ATUALIZAR DADOS";
+            document.getElementById('btnSalvar').style.background = "var(--azul-edit)";
+            document.getElementById('btnCancelar').style.display = "block";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function cancelarEdicao() {
+            idEditando = null;
+            ['unidade','municipio','cre','tpsc','chamado','defeito'].forEach(i => document.getElementById(i).value = "");
+            document.getElementById('btnSalvar').innerText = "SALVAR REGISTRO";
+            document.getElementById('btnSalvar').style.background = "";
+            document.getElementById('btnCancelar').style.display = "none";
         }
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Carregando dados da Planilha Google...</td></tr>";
-            
+            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando...</td></tr>";
             try {
-                const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
-                const dados = await response.json();
+                const res = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
+                const dados = await res.json();
                 registrosLocal = dados;
                 corpo.innerHTML = "";
+                let s = { t:0, a:0, e:0, i:0, o:0 };
 
-                let s = { total: 0, aberto: 0, ok: 0, inst: 0, outros: 0 };
-
-                // Inverter para ver os registros novos no topo
                 dados.reverse().forEach(v => {
-                    s.total++;
+                    s.t++;
                     const st = (v.status || '').toLowerCase();
-                    if(st.includes('atendendo')) s.aberto++;
-                    else if(st.includes('encerrado')) s.ok++;
-                    else if(st.includes('instalação')) s.inst++;
-                    else s.outros++;
+                    if(st.includes('atendendo')) s.a++;
+                    else if(st.includes('encerrado')) s.e++;
+                    else if(st.includes('instalação')) s.i++;
+                    else s.o++;
 
-                    // MAPEAMENTO EXPLÍCITO DAS COLUNAS (Ignora o ID automaticamente)
                     corpo.innerHTML += `
                         <tr>
+                            <td><button class="btn btn-editar" onclick="prepararEdicao(${v.id})">Editar</button></td>
                             <td>${formatarData(v.data)}</td>
                             <td><b>${v.unidade || '-'}</b></td>
                             <td>${v.municipio || v.município || '-'}</td>
@@ -216,16 +210,12 @@
                             <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
                         </tr>`;
                 });
-
-                document.getElementById('stat-total').innerText = s.total;
-                document.getElementById('stat-aberto').innerText = s.aberto;
-                document.getElementById('stat-ok').innerText = s.ok;
-                document.getElementById('stat-inst').innerText = s.inst;
-                document.getElementById('stat-outros').innerText = s.outros;
-
-            } catch (e) { 
-                corpo.innerHTML = "<tr><td colspan='9' style='color:red; text-align:center'>Erro ao carregar. Verifique a conexão.</td></tr>"; 
-            }
+                document.getElementById('stat-total').innerText = s.t;
+                document.getElementById('stat-aberto').innerText = s.a;
+                document.getElementById('stat-ok').innerText = s.e;
+                document.getElementById('stat-inst').innerText = s.i;
+                document.getElementById('stat-outros').innerText = s.o;
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red'>Erro ao carregar dados.</td></tr>"; }
         }
 
         function exportarExcel() {
@@ -238,13 +228,12 @@
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
-            doc.text("Relatório de Manutenção de Impressoras - SED SC", 10, 10);
+            doc.text("Relatório SED SC", 10, 10);
             doc.autoTable({
-                head: [['Data', 'Unidade', 'Município', 'IMP', 'Status']],
-                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.municipio || v.município, v.chamado || v.imp, v.status]),
-                startY: 20
+                head: [['Data', 'Unidade', 'Status', 'Obs']],
+                body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs])
             });
-            doc.save("Relatorio_Impressoras.pdf");
+            doc.save("Relatorio.pdf");
         }
     </script>
 </body>
