@@ -148,45 +148,44 @@
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Carregando nuvem...</td></tr>";
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const dados = await response.json();
-                registrosParaExportar = dados;
-                corpo.innerHTML = "";
-                
-                let stats = { total: 0, atendendo: 0, ok: 0, inst: 0, outros: 0 };
-                dados.reverse().forEach(v => {
-                    stats.total++;
-                    const st = (v.status || '').toLowerCase();
-                    if(st.includes('atendendo')) stats.atendendo++;
-                    else if(st.includes('encerrado')) stats.ok++;
-                    else if(st.includes('instalação')) stats.inst++;
-                    else stats.outros++;
+            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Sincronizando...</td></tr>";
 
-                    corpo.innerHTML += `
-                        <tr>
-                            <td>${v.data || '-'}</td>
-                            <td><b>${v.unidade || '-'}</b></td>
-                            <td>${v.municipio || '-'}</td>
-                            <td>${v.cre || '-'}</td>
-                            <td>${v.tpsc || '-'}</td>
-                            <td>${v.chamado || v.imp || '-'}</td>
-                            <td><span class="badge-status status-${st.split(' ')[0]}">${v.status || '-'}</span></td>
-                            <td>${v.defeito || v.obs || '-'}</td>
-                            <td><small>${v.usuario_reg || v.operador || '-'}</small></td>
-                        </tr>`;
-                });
-                document.getElementById('stat-total').innerText = stats.total;
-                document.getElementById('stat-aberto').innerText = stats.atendendo;
-                document.getElementById('stat-ok').innerText = stats.ok;
-                document.getElementById('stat-inst').innerText = stats.inst;
-                document.getElementById('stat-mov').innerText = stats.outros;
-            } catch (e) { corpo.innerHTML = "<tr><td colspan='9' style='color:red'>Erro ao carregar dados. Verifique se o Script está em 'Qualquer Pessoa'.</td></tr>"; }
+            try {
+            // O ?t= garante que não usem dados antigos salvos no navegador
+            const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
+            const dados = await response.json();
+        
+            console.log("Dados recebidos:", dados); // Isso ajuda a ver o erro apertando F12
+
+            if (dados.error) {
+            corpo.innerHTML = `<tr><td colspan='9' style='color:red'>Erro no Script: ${dados.error}</td></tr>`;
+            return;
+            }
+
+            corpo.innerHTML = "";
+            dados.reverse().forEach(v => {
+                corpo.innerHTML += `
+                    <tr>
+                        <td>${v.data || '-'}</td>
+                        <td><b>${v.unidade || '-'}</b></td>
+                        <td>${v.municipio || '-'}</td>
+                        <td>${v.cre || '-'}</td>
+                        <td>${v.tpsc || '-'}</td>
+                        <td>${v.imp || v.chamado || '-'}</td>
+                        <td>${v.status || '-'}</td>
+                        <td>${v.defeito || v.obs || '-'}</td>
+                        <td>${v.usuario_reg || v.operador || '-'}</td>
+                    </tr>`;
+            });
+        } catch (e) {
+            corpo.innerHTML = "<tr><td colspan='9' style='color:red'>Erro de conexão ou permissão.</td></tr>";
+            console.error(e);
         }
+    }
 
         function exportarExcel() { const ws = XLSX.utils.json_to_sheet(registrosParaExportar); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dados"); XLSX.writeFile(wb, "Relatorio.xlsx"); }
         function exportarPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF('l'); doc.text("Relatório SED SC", 10, 10); doc.autoTable({ head: [['Data', 'Unidade', 'Status']], body: registrosParaExportar.map(v => [v.data, v.unidade, v.status]) }); doc.save("Relatorio.pdf"); }
     </script>
 </body>
 </html>
+
