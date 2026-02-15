@@ -3,60 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA GESTÃO SED SC - CLOUD</title>
+    <title>SISTEMA GESTÃO SED SC</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --azul-inst: #007bff; --vermelho-sc: #dc3545; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
+        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-bg); margin: 0; }
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 380px; border-top: 8px solid var(--vermelho-sc); }
+        .login-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 350px; border-top: 8px solid var(--vermelho-sc); }
         #container-principal { display: none; padding: 20px; }
-        .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header-titulo h1 { margin: 0; font-size: 16px; color: var(--verde-sed); text-transform: uppercase; }
-        .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #ccc; }
-        .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .header-main { background: white; padding: 15px; border-radius: 10px; border-left: 10px solid var(--verde-sed); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; border-bottom: 4px solid #ccc; }
+        .stat-card b { font-size: 20px; color: var(--verde-sed); display: block; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
-        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 12px; }
-        .btn-salvar { background: var(--verde-sed); color: white; height: 42px; align-self: end; }
-        .table-wrap { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid #eee; background: white; }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 5; text-align: left; }
-        td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #eee; }
-        .badge-status { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-salvar { background: var(--verde-sed); color: white; width: 100%; }
+        .table-wrap { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: var(--verde-sed); border-bottom: 2px solid #ddd; }
+        td { padding: 10px; font-size: 13px; border-bottom: 1px solid #eee; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .status-atendendo { background: #fff3cd; color: #856404; }
         .status-encerrado { background: #d4edda; color: #155724; }
-        .status-instalação { background: #cfe2ff; color: #084298; }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
         <div class="login-box">
-            <div style="font-size: 22px; font-weight: 800; color: var(--verde-sed);">Sistema Gestão SED</div>
-            <div style="color: #666; font-size: 12px; margin-bottom: 25px;">Gerenciamento de Impressoras - Cloud</div>
+            <h2 style="color: var(--verde-sed); margin-top:0;">Gestão SED SC</h2>
             <input type="text" id="user-login" placeholder="Nome do Operador">
             <br><br>
-            <button class="btn btn-salvar" style="width: 100%; margin:0;" onclick="fazerLogin()">ACESSAR PAINEL</button>
+            <button class="btn btn-salvar" onclick="fazerLogin()">ENTRAR</button>
         </div>
     </div>
 
     <div id="container-principal">
         <div class="header-main">
-            <div class="header-titulo"><h1>Gerenciamento Impressoras - SED SC</h1></div>
-            <div style="display: flex; gap: 5px; align-items: center;">
-                <span style="font-size: 12px; margin-right: 10px;">Operador: <strong id="nome-usuario-logado"></strong></span>
-                <button class="btn" style="background: #e74c3c; color: white;" onclick="exportarPDF()">📄 PDF</button>
-                <button class="btn" style="background: #27ae60; color: white;" onclick="exportarExcel()">📊 Excel</button>
-                <button class="btn" style="background: #333; color: white;" onclick="location.reload()">Sair</button>
+            <div><h1 style="font-size: 18px; margin:0;">CONTROLE DE IMPRESSORAS</h1></div>
+            <div>
+                <span id="nome-usuario-logado" style="margin-right:15px; font-weight:bold;"></span>
+                <button class="btn" style="background:#e74c3c; color:white;" onclick="exportarPDF()">PDF</button>
+                <button class="btn" style="background:#27ae60; color:white;" onclick="exportarExcel()">Excel</button>
             </div>
         </div>
 
@@ -65,57 +60,53 @@
             <div class="stat-card"><small>Atendendo</small><b id="stat-aberto">0</b></div>
             <div class="stat-card"><small>Encerrados</small><b id="stat-ok">0</b></div>
             <div class="stat-card"><small>Instalação</small><b id="stat-inst">0</b></div>
-            <div class="stat-card"><small>Outros</small><b id="stat-mov">0</b></div>
+            <div class="stat-card"><small>Outros</small><b id="stat-outros">0</b></div>
         </div>
 
         <div class="card">
             <div class="form-grid">
-                <div class="form-group span-2"><label>UNIDADE ESCOLAR</label><input type="text" id="unidade"></div>
-                <div class="form-group"><label>MUNICÍPIO</label><input type="text" id="municipio"></div>
-                <div class="form-group"><label>CRE</label><input type="text" id="cre"></div>
-                <div class="form-group"><label>TPSC</label><input type="text" id="tpsc"></div>
-                <div class="form-group"><label>IMP</label><input type="text" id="chamado"></div>
-                <div class="form-group">
+                <div class="span-2"><label>UNIDADE</label><input type="text" id="unidade"></div>
+                <div><label>MUNICÍPIO</label><input type="text" id="municipio"></div>
+                <div><label>CRE</label><input type="text" id="cre"></div>
+                <div><label>TPSC</label><input type="text" id="tpsc"></div>
+                <div><label>IMP</label><input type="text" id="chamado"></div>
+                <div>
                     <label>STATUS</label>
                     <select id="status">
                         <option>Atendendo</option>
-                        <option>Instalação</option>
                         <option>Encerrado</option>
-                        <option>Troca de Equipamento</option>
-                        <option>Mudança de Local</option>
-                        <option>Retirada de Equipamento</option>
+                        <option>Instalação</option>
+                        <option>Troca</option>
                     </select>
                 </div>
-                <button class="btn btn-salvar" id="btnSalvar" onclick="salvarRegistro()">SALVAR REGISTRO</button>
-                <div class="form-group span-4"><label>OBSERVAÇÕES</label><textarea id="defeito" rows="2"></textarea></div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-salvar" id="btnSalvar" onclick="salvarRegistro()">SALVAR</button>
+                </div>
+                <div class="span-4"><label>OBSERVAÇÕES</label><textarea id="defeito" rows="2"></textarea></div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="table-wrap">
-                <table id="tabela-dados">
-                    <thead>
-                        <tr>
-                            <th>Data</th><th>Unidade</th><th>Município</th><th>CRE</th><th>TPSC</th><th>IMP</th><th>Status</th><th>Obs</th><th>Operador</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpoTabela"></tbody>
-                </table>
-            </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>DATA</th><th>UNIDADE</th><th>MUNICÍPIO</th><th>CRE</th><th>TPSC</th><th>IMP</th><th>STATUS</th><th>OBS</th><th>OPERADOR</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela"></tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        // URL DO SEU APP DA WEB (CONFORME SUA IMAGEM)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJsIvdBu6EDwRF-PMOYNkBpYfnCXIInwGhJKq7F7Te0yj3ZiOHVq7NfhIr6tmQS5zw0Q/exec";
-        
         let usuarioLogado = "";
-        let registrosParaExportar = [];
+        let registrosLocal = [];
 
         function fazerLogin() {
             usuarioLogado = document.getElementById('user-login').value;
-            if(!usuarioLogado) return alert("Informe seu nome.");
-            document.getElementById('nome-usuario-logado').innerText = usuarioLogado;
+            if(!usuarioLogado) return alert("Digite seu nome.");
+            document.getElementById('nome-usuario-logado').innerText = "Operador: " + usuarioLogado;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('container-principal').style.display = 'block';
             carregarTabela();
@@ -134,58 +125,80 @@
                 defeito: document.getElementById('defeito').value,
                 usuario_reg: usuarioLogado
             };
-            if(!dados.unidade) return alert("Unidade obrigatória!");
-            btn.disabled = true; btn.innerText = "ENVIANDO...";
+
+            if(!dados.unidade) return alert("Preencha a unidade.");
+            btn.disabled = true; btn.innerText = "Salvando...";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
-                alert("Salvo com sucesso!");
-                ['unidade', 'municipio', 'cre', 'tpsc', 'chamado', 'defeito'].forEach(id => document.getElementById(id).value = "");
+                alert("Sucesso!");
+                ['unidade','municipio','cre','tpsc','chamado','defeito'].forEach(id => document.getElementById(id).value = "");
                 carregarTabela();
             } catch (e) { alert("Erro ao salvar."); }
-            finally { btn.disabled = false; btn.innerText = "SALVAR REGISTRO"; }
+            finally { btn.disabled = false; btn.innerText = "SALVAR"; }
         }
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Sincronizando...</td></tr>";
-
+            corpo.innerHTML = "<tr><td colspan='9' style='text-align:center'>Carregando dados...</td></tr>";
+            
             try {
-            // O ?t= garante que não usem dados antigos salvos no navegador
-            const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
-            const dados = await response.json();
-        
-            console.log("Dados recebidos:", dados); // Isso ajuda a ver o erro apertando F12
+                const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
+                const dados = await response.json();
+                registrosLocal = dados;
+                corpo.innerHTML = "";
 
-            if (dados.error) {
-            corpo.innerHTML = `<tr><td colspan='9' style='color:red'>Erro no Script: ${dados.error}</td></tr>`;
-            return;
-            }
+                let s = { t:0, a:0, e:0, i:0, o:0 };
 
-            corpo.innerHTML = "";
-            dados.reverse().forEach(v => {
-                corpo.innerHTML += `
-                    <tr>
-                        <td>${v.data || '-'}</td>
-                        <td><b>${v.unidade || '-'}</b></td>
-                        <td>${v.municipio || '-'}</td>
-                        <td>${v.cre || '-'}</td>
-                        <td>${v.tpsc || '-'}</td>
-                        <td>${v.imp || v.chamado || '-'}</td>
-                        <td>${v.status || '-'}</td>
-                        <td>${v.defeito || v.obs || '-'}</td>
-                        <td>${v.usuario_reg || v.operador || '-'}</td>
-                    </tr>`;
-            });
-        } catch (e) {
-            corpo.innerHTML = "<tr><td colspan='9' style='color:red'>Erro de conexão ou permissão.</td></tr>";
-            console.error(e);
+                dados.reverse().forEach(v => {
+                    s.t++;
+                    const st = (v.status || '').toLowerCase();
+                    if(st.includes('atendendo')) s.a++;
+                    else if(st.includes('encerrado')) s.e++;
+                    else if(st.includes('instalação')) s.i++;
+                    else s.o++;
+
+                    // Note que aqui NÃO usamos o v.id. Começamos direto pela Data.
+                    corpo.innerHTML += `
+                        <tr>
+                            <td>${v.data || '-'}</td>
+                            <td><b>${v.unidade || '-'}</b></td>
+                            <td>${v.município || v.municipio || '-'}</td>
+                            <td>${v.cre || '-'}</td>
+                            <td>${v.tpsc || '-'}</td>
+                            <td>${v.imp || v.chamado || '-'}</td>
+                            <td><span class="badge status-${st.split(' ')[0]}">${v.status || '-'}</span></td>
+                            <td>${v.obs || v.defeito || '-'}</td>
+                            <td><small>${v.operador || v.usuario_reg || '-'}</small></td>
+                        </tr>`;
+                });
+
+                document.getElementById('stat-total').innerText = s.t;
+                document.getElementById('stat-aberto').innerText = s.a;
+                document.getElementById('stat-ok').innerText = s.e;
+                document.getElementById('stat-inst').innerText = s.i;
+                document.getElementById('stat-outros').innerText = s.o;
+
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='9' style='color:red'>Erro ao carregar dados da nuvem.</td></tr>"; }
         }
-    }
 
-        function exportarExcel() { const ws = XLSX.utils.json_to_sheet(registrosParaExportar); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dados"); XLSX.writeFile(wb, "Relatorio.xlsx"); }
-        function exportarPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF('l'); doc.text("Relatório SED SC", 10, 10); doc.autoTable({ head: [['Data', 'Unidade', 'Status']], body: registrosParaExportar.map(v => [v.data, v.unidade, v.status]) }); doc.save("Relatorio.pdf"); }
+        function exportarExcel() {
+            const ws = XLSX.utils.json_to_sheet(registrosLocal);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Chamados");
+            XLSX.writeFile(wb, "Relatorio_SED.xlsx");
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l');
+            doc.text("Relatório de Impressoras - SED SC", 10, 10);
+            doc.autoTable({
+                head: [['Data', 'Unidade', 'Município', 'Status']],
+                body: registrosLocal.map(v => [v.data, v.unidade, v.municipio || v.município, v.status])
+            });
+            doc.save("Relatorio.pdf");
+        }
     </script>
 </body>
 </html>
-
