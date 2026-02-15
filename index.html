@@ -3,30 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA GESTÃO SED SC v4.0</title>
+    <title>SISTEMA GESTÃO SED SC v5.0</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; --azul-edit: #2980b9; }
+        :root { --verde-sed: #006437; --verde-escuro: #004d2a; --cinza-bg: #f4f7f6; --vermelho-sc: #dc3545; --azul-edit: #2980b9; --cinza-filtro: #e9ecef; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--cinza-bg); margin: 0; padding: 0; }
+        
         #tela-login { position: fixed; width: 100%; height: 100%; background: var(--verde-sed); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 350px; border-top: 8px solid var(--vermelho-sc); }
         #container-principal { display: none; padding: 20px; }
+        
         .header-main { background: white; padding: 15px 25px; border-radius: 10px; border-left: 10px solid var(--verde-sed); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; border-bottom: 4px solid #ccc; }
         .stat-card b { font-size: 24px; color: var(--verde-sed); display: block; }
+
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
+        
+        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
+        
         .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
         .btn-salvar { background: var(--verde-sed); color: white; width: 100%; height: 42px; align-self: end; }
+        .btn-limpar { background: #666; color: white; height: 42px; align-self: flex-end; }
         .btn-editar { background: #f39c12; color: white; padding: 5px 10px; }
+
+        /* SEÇÃO DE FILTROS REFINADOS */
+        .filtro-refinado { background: var(--cinza-filtro); padding: 20px; border-radius: 10px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 2fr auto; gap: 15px; align-items: flex-end; }
+
         .table-wrap { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { background: #f8f9fa; color: var(--verde-sed); font-size: 11px; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; position: sticky; top: 0; }
@@ -39,18 +49,14 @@
         .status-troca { background: #e2d9f3; color: #512da8; }
         .status-retirada { background: #f8d7da; color: #842029; }
         .status-mudança { background: #e2e3e5; color: #41464b; }
-
-        /* Barra de Pesquisa */
-        .search-container { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
-        #inputPesquisa { flex: 1; padding: 12px; border: 2px solid var(--verde-sed); border-radius: 8px; font-size: 14px; outline: none; }
-        #inputPesquisa:focus { box-shadow: 0 0 8px rgba(0, 100, 55, 0.2); }
     </style>
 </head>
 <body>
+
     <div id="tela-login">
         <div class="login-box">
             <h2 style="color: var(--verde-sed);">SISTEMA SED SC</h2>
-            <p style="font-size: 12px; color: #666;">Controle de Chamados v4.0</p>
+            <p style="font-size: 12px; color: #666;">Acesso Administrativo v5.0</p>
             <input type="text" id="user-login" placeholder="Nome do Operador">
             <br><br>
             <button class="btn btn-salvar" onclick="fazerLogin()">ACESSAR PAINEL</button>
@@ -59,7 +65,7 @@
 
     <div id="container-principal">
         <div class="header-main">
-            <h1>Gestão de Chamados de Impressoras - SED SC</h1>
+            <h1>Gestão de Equipamentos</h1>
             <div>
                 <span id="nome-usuario-logado" style="margin-right:15px; font-weight:bold;"></span>
                 <button class="btn" style="background:#e74c3c; color:white;" onclick="exportarPDF()">PDF</button>
@@ -102,12 +108,32 @@
             </div>
         </div>
 
-        <div class="search-container">
-            <input type="text" id="inputPesquisa" placeholder="🔍 Pesquisar por Escola, Município, Status ou IMP..." onkeyup="filtrarTabela()">
+        <div class="filtro-refinado">
+            <div>
+                <label>Mês/Ano</label>
+                <input type="month" id="filtroMesAno" onchange="aplicarFiltros()">
+            </div>
+            <div>
+                <label>Status</label>
+                <select id="filtroStatus" onchange="aplicarFiltros()">
+                    <option value="Todos">Todos</option>
+                    <option>Atendendo</option>
+                    <option>Encerrado</option>
+                    <option>Instalação</option>
+                    <option>Troca de Equipamento</option>
+                    <option>Retirada de Equipamento</option>
+                    <option>Mudança de Local</option>
+                </select>
+            </div>
+            <div>
+                <label>Busca Rápida</label>
+                <input type="text" id="filtroBusca" placeholder="Buscar Unidade, CRE, Município, IMP..." onkeyup="aplicarFiltros()">
+            </div>
+            <button class="btn btn-limpar" onclick="limparFiltros()">Limpar Filtros</button>
         </div>
 
         <div class="table-wrap">
-            <table id="tabelaDados">
+            <table>
                 <thead>
                     <tr>
                         <th>AÇÃO</th>
@@ -136,7 +162,7 @@
         function fazerLogin() {
             usuarioLogado = document.getElementById('user-login').value;
             if(!usuarioLogado) return alert("Por favor, informe seu nome.");
-            document.getElementById('nome-usuario-logado').innerText = usuarioLogado;
+            document.getElementById('nome-usuario-logado').innerText = "Operador: " + usuarioLogado;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('container-principal').style.display = 'block';
             carregarTabela();
@@ -170,10 +196,10 @@
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
-                alert(idEditando ? "Registro atualizado!" : "Registro salvo!");
+                alert(idEditando ? "Atualizado!" : "Salvo!");
                 cancelarEdicao();
                 carregarTabela();
-            } catch (e) { alert("Erro ao conectar ao banco de dados."); }
+            } catch (e) { alert("Erro de conexão."); }
             finally { btn.disabled = false; }
         }
 
@@ -189,7 +215,7 @@
             document.getElementById('status').value = r.status || 'Atendendo';
             document.getElementById('defeito').value = r.defeito || r.obs || '';
             
-            document.getElementById('btnSalvar').innerText = "ATUALIZAR DADOS";
+            document.getElementById('btnSalvar').innerText = "ATUALIZAR";
             document.getElementById('btnSalvar').style.background = "var(--azul-edit)";
             document.getElementById('btnCancelar').style.display = "block";
             window.scrollTo({top: 0, behavior: 'smooth'});
@@ -205,13 +231,45 @@
 
         async function carregarTabela() {
             const corpo = document.getElementById('corpoTabela');
-            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='10' style='text-align:center'>Sincronizando dados...</td></tr>";
             try {
                 const res = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
-                const dados = await res.json();
-                registrosLocal = dados;
-                renderizarLinhas(dados);
-            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red'>Erro ao carregar dados.</td></tr>"; }
+                registrosLocal = await res.json();
+                aplicarFiltros();
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='10' style='color:red'>Erro ao carregar.</td></tr>"; }
+        }
+
+        function aplicarFiltros() {
+            const mesAno = document.getElementById('filtroMesAno').value; // Formato YYYY-MM
+            const status = document.getElementById('filtroStatus').value;
+            const busca = document.getElementById('filtroBusca').value.toLowerCase();
+
+            const filtrados = registrosLocal.filter(r => {
+                // Filtro Mês/Ano
+                let matchData = true;
+                if (mesAno) {
+                    const dataObj = new Date(r.data);
+                    const itemMesAno = `${dataObj.getFullYear()}-${String(dataObj.getMonth() + 1).padStart(2, '0')}`;
+                    matchData = (itemMesAno === mesAno);
+                }
+
+                // Filtro Status
+                let matchStatus = (status === "Todos" || r.status === status);
+
+                // Filtro Busca Geral
+                let matchBusca = Object.values(r).some(v => String(v).toLowerCase().includes(busca));
+
+                return matchData && matchStatus && matchBusca;
+            });
+
+            renderizarLinhas(filtrados);
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtroMesAno').value = "";
+            document.getElementById('filtroStatus').value = "Todos";
+            document.getElementById('filtroBusca').value = "";
+            aplicarFiltros();
         }
 
         function renderizarLinhas(lista) {
@@ -251,25 +309,17 @@
             document.getElementById('stat-outros').innerText = s.o;
         }
 
-        function filtrarTabela() {
-            const termo = document.getElementById('inputPesquisa').value.toLowerCase();
-            const filtrados = registrosLocal.filter(r => {
-                return Object.values(r).some(v => String(v).toLowerCase().includes(termo));
-            });
-            renderizarLinhas(filtrados);
-        }
-
         function exportarExcel() {
             const ws = XLSX.utils.json_to_sheet(registrosLocal);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Chamados");
-            XLSX.writeFile(wb, "Relatorio_SED.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Dados");
+            XLSX.writeFile(wb, "Relatorio_Chamados.xlsx");
         }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
-            doc.text("Relatório Geral SED SC", 10, 10);
+            doc.text("Relatório SED SC", 10, 10);
             doc.autoTable({
                 head: [['Data', 'Unidade', 'Status', 'Obs']],
                 body: registrosLocal.map(v => [formatarData(v.data), v.unidade, v.status, v.defeito || v.obs])
@@ -279,4 +329,3 @@
     </script>
 </body>
 </html>
-
